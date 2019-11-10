@@ -1,3 +1,5 @@
 project/data/
 project/models/
 project/logs/
+project/notebooks/.ipynb_checkpoints
+
