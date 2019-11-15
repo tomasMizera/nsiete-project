@@ -42,6 +42,7 @@ RUN ${PIP} install ${TF_PACKAGE}${TF_PACKAGE_VERSION:+==${TF_PACKAGE_VERSION}}
 
 RUN ${PIP} install jupyter matplotlib
 RUN ${PIP} install jupyter_http_over_ws
+RUN ${PIP} install pandas
 RUN jupyter serverextension enable --py jupyter_http_over_ws
 
 RUN mkdir -p /labs && chmod -R a+rwx /labs/
