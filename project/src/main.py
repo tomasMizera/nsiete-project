@@ -60,6 +60,7 @@ model.fit_generator(
         keras.callbacks.TensorBoard(
             log_dir=os.path.join("../logs", str(datetime.now())),
             histogram_freq=1,
-            profile_batch=0)
+            profile_batch=0),
+        keras.callbacks.ModelCheckpoint(filepath='../models/model.ckpt', verbose=1)
     ])
 

@@ -27,10 +27,9 @@ COPY requirements.txt requirements.txt
 # See http://bugs.python.org/issue19846
 ENV LANG C.UTF-8
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y libsm6 libxext6 libxrender-dev \
     ${PYTHON} \
-    ${PYTHON}-pip \
-    libsm6 libxext6 libxrender-dev
+    ${PYTHON}-pip     
 
 RUN ${PIP} --no-cache-dir install --upgrade \
     pip \
