@@ -22,12 +22,14 @@ ARG _PY_SUFFIX=3
 ARG PYTHON=python${_PY_SUFFIX}
 ARG PIP=pip${_PY_SUFFIX}
 
+COPY requirements.txt requirements.txt
+
 # See http://bugs.python.org/issue19846
 ENV LANG C.UTF-8
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y libsm6 libxext6 libxrender-dev \
     ${PYTHON} \
-    ${PYTHON}-pip
+    ${PYTHON}-pip     
 
 RUN ${PIP} --no-cache-dir install --upgrade \
     pip \
@@ -38,11 +40,8 @@ RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
 
 ARG TF_PACKAGE=tensorflow
 ARG TF_PACKAGE_VERSION=2.0.0
-RUN ${PIP} install ${TF_PACKAGE}${TF_PACKAGE_VERSION:+==${TF_PACKAGE_VERSION}}
+RUN ${PIP} install -r requirements.txt
 
-RUN ${PIP} install jupyter matplotlib
-RUN ${PIP} install jupyter_http_over_ws
-RUN ${PIP} install pandas
 RUN jupyter serverextension enable --py jupyter_http_over_ws
 
 RUN mkdir -p /labs && chmod -R a+rwx /labs/
