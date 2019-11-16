@@ -56,7 +56,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy',
               metrics=[dice_coef])
 
 model.fit_generator(
-    train_generator, validation_data=val_generator, epochs=1, verbose=3, callbacks=[
+    train_generator, validation_data=val_generator, epochs=6, verbose=3, callbacks=[
         keras.callbacks.TensorBoard(
             log_dir=os.path.join("../logs", str(datetime.now())),
             histogram_freq=1,
