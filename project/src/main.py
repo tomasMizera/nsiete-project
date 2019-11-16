@@ -7,8 +7,8 @@ import os
 from sklearn.model_selection import train_test_split
 from segmentation_models import Unet
 from segmentation_models import get_preprocessing
-from .data.generator import DataGenerator
-from .models.util import dice_coef
+from data.generator import DataGenerator
+from models.util import dice_coef
 
 train = pd.read_csv('../data/train.csv')
 train['ImageId'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
@@ -58,7 +58,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy',
 model.fit_generator(
     train_generator, validation_data=val_generator, epochs=1, verbose=3, callbacks=[
         keras.callbacks.TensorBoard(
-            log_dir=os.path.join("logs", str(datetime.now())),
+            log_dir=os.path.join("../logs", str(datetime.now())),
             histogram_freq=1,
             profile_batch=0)
     ])

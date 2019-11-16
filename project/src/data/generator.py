@@ -81,7 +81,7 @@ class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
 
     def __init__(self, list_IDs, df, target_df=None, mode='fit',
-                 base_path='../../data/train_images',
+                 base_path='/labs/data/train_images',
                  batch_size=32, dim=(1400, 2100), n_channels=3, reshape=None,
                  n_classes=4, random_state=2019, shuffle=True):
         self.dim = dim
