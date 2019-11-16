@@ -3,8 +3,9 @@
 `docker run -p 8888:8888 -p 6006:6006 -v ${pwd}/project:/labs --name nsiete-project -it nsiete-project`
 
 ### Run project in cloud and execute main.py script
-`cd /home/project/nsiete-project/project`
-`sudo docker run --gpus all -d -it --rm --name nn -v `pwd`:/labs tensorflow/tensorflow:latest-gpu-py3 bash labs/script.sh` 
+`sudo docker run --gpus all -d -it --rm --name nn -v /home/project/nsiete-project/project:/labs tensorflow/tensorflow:latest-gpu-py3 bash labs/script.sh`
+To view logs from docker container run 
+`sudo docker logs -f nn` 
 
 ### Urls with train test data
 https://www.kaggle.com/c/13333/download-all
