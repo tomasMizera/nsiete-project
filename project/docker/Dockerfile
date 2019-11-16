@@ -38,11 +38,8 @@ RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
 
 ARG TF_PACKAGE=tensorflow
 ARG TF_PACKAGE_VERSION=2.0.0
-RUN ${PIP} install ${TF_PACKAGE}${TF_PACKAGE_VERSION:+==${TF_PACKAGE_VERSION}}
+RUN ${PIP} install -r requirements.txt
 
-RUN ${PIP} install jupyter matplotlib
-RUN ${PIP} install jupyter_http_over_ws
-RUN ${PIP} install pandas
 RUN jupyter serverextension enable --py jupyter_http_over_ws
 
 RUN mkdir -p /labs && chmod -R a+rwx /labs/
