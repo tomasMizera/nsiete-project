@@ -24,6 +24,8 @@ While working on project we came across several challenges:
 
 #### *Files*
 
+* `analysis/data_analysis.ipynb(.html)` - data analysis, also generated to html for simpler view 
+
 * `main.py` - model definition and training
 
 * `data/generator.py` - code for Generator class handling data manipulation and streaming to model
@@ -35,7 +37,6 @@ While working on project we came across several challenges:
 Even though we were able to run more runs, our first big run had 50 epochs and these are results:
 
 <p><span style="font-style:italic">Legenda: </span><span style="color:blue"><em>Validation data</em> </span> - <span style="color:orange"><em>Train data</em></span></p>
-
 
 
 <img src="/home/tomasmizera/school/nsiete/nsiete-project/project/docs/model_acc.png" alt="First run on data"/>

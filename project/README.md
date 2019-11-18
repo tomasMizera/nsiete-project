@@ -13,3 +13,9 @@ https://www.kaggle.com/c/13333/download-all
 
 ### Notebooks
 run jupyter notebook from `nsiete-project/project` directory
+
+
+what next:
+- check whether resnet actually helps us
+- try another architectures
+- check what is output and compare different types
