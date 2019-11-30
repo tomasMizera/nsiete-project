@@ -5,6 +5,7 @@ import keras
 import cv2
 import os
 import efficientnet.keras as efn
+from keras_radam import RAdam
 from sklearn.model_selection import train_test_split
 from segmentation_models import Unet
 from segmentation_models import get_preprocessing
@@ -71,8 +72,11 @@ def get_model():
 
 model = get_model()
 
-model.compile(optimizer='adam', loss='categorical_crossentropy',
-              metrics=[dice_coef])
+for base_layer in model.layers[:-3]:
+    base_layer.trainable = False
+
+model.compile(optimizer=RAdam(warmup_proportion=0.1, min_lr=1e-5),
+              loss='categorical_crossentropy', metrics=['accuracy'])
 
 model.fit_generator(
     train_generator, validation_data=val_generator, epochs=20, verbose=3, callbacks=[
