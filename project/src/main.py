@@ -4,11 +4,16 @@ from datetime import datetime
 import keras
 import cv2
 import os
+import efficientnet.keras as efn
 from sklearn.model_selection import train_test_split
 from segmentation_models import Unet
 from segmentation_models import get_preprocessing
+import keras.backend as K
+from keras.layers import Dense
+from keras.models import Model
 from data.generator import DataGenerator
 from models.util import dice_coef
+from models.util import PrAucCallback
 
 train = pd.read_csv('../data/train.csv')
 train['ImageId'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
@@ -49,18 +54,32 @@ val_generator = DataGenerator(
     n_classes=4
 )
 
-preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
-model = Unet('resnet34', input_shape=(256, 384, 3),
-             classes=4, activation='sigmoid')
-model.compile(optimizer='adam', loss='binary_crossentropy',
-              metrics=[dice_coef])
+train_metric_callback = PrAucCallback(train_generator)
+val_callback = PrAucCallback(val_generator, stage='val')
+
+# Unet model
+# preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
+# model = Unet('resnet34', input_shape=(256, 384, 3),
+#              classes=4, activation='sigmoid')
+# model.compile(optimizer='adam', loss='binary_crossentropy',
+#               metrics=[dice_coef])
+ 
+def get_model():
+    K.clear_session()
+    base_model = efn.EfficientNetB2(weights='imagenet', include_top=False, pooling='avg', input_shape=(256, 384, 3))
+    x = base_model.output
+    y_pred = Dense(4, activation='sigmoid')(x)
+    return Model(inputs=base_model.input, outputs=y_pred)
+
+model = get_model()
 
 model.fit_generator(
-    train_generator, validation_data=val_generator, epochs=6, verbose=3, callbacks=[
+    train_generator, validation_data=val_generator, epochs=20, verbose=3, callbacks=[
         keras.callbacks.TensorBoard(
             log_dir=os.path.join("../logs", str(datetime.now())),
             histogram_freq=1,
             profile_batch=0),
-        keras.callbacks.ModelCheckpoint(filepath='../models/model.ckpt', verbose=1)
+        keras.callbacks.ModelCheckpoint(filepath='../models/model.ckpt', verbose=1),
+        train_metric_callback, val_callback
     ])
 
