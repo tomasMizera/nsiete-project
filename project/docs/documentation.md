@@ -48,7 +48,7 @@ While working on project we came across several challenges:
 
 
 
-*Files*
+**Files** TODO rewrite
 
 * `analysis/data_analysis.ipynb(.html)` - data analysis, also generated to html for simpler view 
 
@@ -58,20 +58,20 @@ While working on project we came across several challenges:
 
 * `models/util.py`  - does dice coef
 
-*First complete run*
+**First complete run**
 
 Our first big run was with Unet architecture and `resnet34` had 50 epochs and these were the results:
 
 <p><span style="font-style:italic">Legenda: </span><span style="color:blue"><em>Validation data</em> </span> - <span style="color:orange"><em>Train data</em></span></p>
 
 
-<img src="/home/tomasmizera/school/nsiete/nsiete-project/project/docs/model_acc.png" alt="First run on data"/>
+<img src="media/model_acc.png" alt="First run on data"/>
 
 *Model accuracy on 50 epochs*
 
 
 
-<img src="/home/tomasmizera/school/nsiete/nsiete-project/project/docs/model_loss.png" alt="First run on data"  />
+<img src="media/model_loss.png" alt="First run on data"  />
 
 *Model loss on 50 epochs*
 
