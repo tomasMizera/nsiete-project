@@ -51,22 +51,22 @@ train_metric_callback = PrAucCallback(data_generator_train_eval)
 val_callback = PrAucCallback(data_generator_val, stage='val')
 
 # Unet model
-preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
-model = Unet('resnet34', input_shape=(256, 256, 3),
-             classes=4, activation='sigmoid')
+# preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
+# model = Unet('resnet34', input_shape=(256, 256, 3),
+#              classes=4, activation='sigmoid')
 
 # EfficientNet model 
-# def get_model():
-#     K.clear_session()
-#     base_model = efn.EfficientNetB2(weights='imagenet', include_top=False, pooling='avg', input_shape=(256, 384, 3))
-#     x = base_model.output
-#     y_pred = Dense(4, activation='sigmoid')(x)
-#     return Model(inputs=base_model.input, outputs=y_pred)
+def get_model():
+    K.clear_session()
+    base_model = efn.EfficientNetB2(weights='imagenet', include_top=False, pooling='avg', input_shape=(256, 256, 3))
+    x = base_model.output
+    y_pred = Dense(4, activation='sigmoid')(x)
+    return Model(inputs=base_model.input, outputs=y_pred)
 
-# model = get_model()
+model = get_model()
 
-# for base_layer in model.layers[:-3]:
-#     base_layer.trainable = False
+for base_layer in model.layers[:-3]:
+    base_layer.trainable = False
 
 model.compile(optimizer=RAdam(warmup_proportion=0.1, min_lr=1e-5),
               loss='categorical_crossentropy', metrics=['accuracy'])
