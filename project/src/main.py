@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from segmentation_models import Unet
 from segmentation_models import get_preprocessing
 import keras.backend as K
-from keras.layers import Dense
+from keras.layers import Dense, Flatten
 from keras.models import Model
 from data.generator import DataGenerator
 from models.util import dice_coef
@@ -59,21 +59,22 @@ train_metric_callback = PrAucCallback(train_generator)
 val_callback = PrAucCallback(val_generator, stage='val')
 
 # Unet model
-# preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
-# model = Unet('resnet34', input_shape=(256, 384, 3),
-#              classes=4, activation='sigmoid')
- 
-def get_model():
-    K.clear_session()
-    base_model = efn.EfficientNetB2(weights='imagenet', include_top=False, pooling='avg', input_shape=(256, 384, 3))
-    x = base_model.output
-    y_pred = Dense(4, activation='sigmoid')(x)
-    return Model(inputs=base_model.input, outputs=y_pred)
+preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
+model = Unet('resnet34', input_shape=(256, 384, 3),
+             classes=4, activation='sigmoid')
 
-model = get_model()
+# EfficientNet model 
+# def get_model():
+#     K.clear_session()
+#     base_model = efn.EfficientNetB2(weights='imagenet', include_top=False, pooling='avg', input_shape=(256, 384, 3))
+#     x = base_model.output
+#     y_pred = Dense(4, activation='sigmoid')(x)
+#     return Model(inputs=base_model.input, outputs=y_pred)
 
-for base_layer in model.layers[:-3]:
-    base_layer.trainable = False
+# model = get_model()
+
+# for base_layer in model.layers[:-3]:
+#     base_layer.trainable = False
 
 model.compile(optimizer=RAdam(warmup_proportion=0.1, min_lr=1e-5),
               loss='categorical_crossentropy', metrics=['accuracy'])
