@@ -1,3 +1,4 @@
+import multiprocessing
 from albumentations import Compose, VerticalFlip, HorizontalFlip, Rotate, GridDistortion
 import pandas as pd
 import numpy as np
@@ -17,18 +18,17 @@ from data.generator import DataGenerator
 from models.util import dice_coef
 from models.util import PrAucCallback
 
-train = pd.read_csv('../data/train.csv')
-train['ImageId'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
-train['cat'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
-train['has_mask'] = ~pd.isna(train['EncodedPixels'])
-train['missing'] = pd.isna(train['EncodedPixels'])
-train_nan = train.groupby('ImageId').agg('sum')
-train_nan.columns = ['No: of Masks', 'Missing masks']
-train_nan['Missing masks'].hist()
+num_cores = multiprocessing.cpu_count()
 
-mask_count_df = pd.DataFrame(train_nan)
-mask_count_df = train.groupby('ImageId').agg(np.sum).reset_index()
-mask_count_df.sort_values('has_mask', ascending=False, inplace=True)
+train = pd.read_csv('../data/train.csv')
+train = train[~train['EncodedPixels'].isnull()]
+train['Image'] = train['Image_Label'].map(lambda x: x.split('_')[0])
+train['Class'] = train['Image_Label'].map(lambda x: x.split('_')[1])
+classes = train['Class'].unique()
+train = train.groupby('Image')['Class'].agg(set).reset_index()
+for class_name in classes:
+    train[class_name] = train['Class'].map(
+        lambda x: 1 if class_name in x else 0)
 
 BATCH_SIZE = 32
 
@@ -37,8 +37,7 @@ train_imgs, val_imgs = train_test_split(train['Image'].values,
                                         stratify=train['Class'].map(lambda x: str(sorted(list(x)))),
                                         random_state=2019)
 
-img_2_ohe_vector = {img: vec for img, vec in zip(
-    train['Image'], train.iloc[:, 2:].values)}
+img_2_ohe_vector = {img: vec for img, vec in zip(train['Image'], train.iloc[:, 2:].values)}
 
 albumentations_train = Compose([
     VerticalFlip(), HorizontalFlip(), Rotate(limit=20), GridDistortion()
@@ -51,8 +50,8 @@ data_generator_train_eval = DataGenerator(
 data_generator_val = DataGenerator(
     val_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
 
-train_metric_callback = PrAucCallback(data_generator_train_eval)
-val_callback = PrAucCallback(data_generator_val, stage='val')
+train_metric_callback = PrAucCallback(data_generator_train_eval, num_workers=num_cores)
+val_callback = PrAucCallback(data_generator_val, stage='val', num_workers=num_cores)
 
 # Unet model
 preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
