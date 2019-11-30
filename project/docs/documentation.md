@@ -22,7 +22,7 @@ Our dataset consists of train and test images downloaded from [Nasa Worldview](h
 
 Here is a visualized example from labeled train data:
 
-![labeled cloud types](./media/cloud.gif)
+![labeled cloud types](media/cloud.gif)
 
 Dataset is further analysed in `data_analysis` jupyter notebook.
 
@@ -36,7 +36,7 @@ We used 2 neural network architectures with several backbones:
 
 We use Unet for predicting masks based on input images (data analysis can be found in `analysis/data_analysis.ipynb`) with backbone `resnet` that extracts features and passes it to Unet.
 
-![Unet for mask prediction](/home/tomasmizera/school/nsiete/nsiete-project/project/docs/unet.png)
+![Unet for mask prediction](media/unet.png)
 
 **Challenges & solutions**
 
@@ -76,13 +76,6 @@ Our first big run was with Unet architecture and `resnet34` had 50 epochs and th
 *Model loss on 50 epochs*
 
 We can see that current run stagnates at 20-25 epochs and after that loss function starts to arise.  It would make sense to stop training after this amount of epochs - this feature will be implemented in final submission.
-
-
-
-
-
-
-
 
 
 #### 4. Related Work
