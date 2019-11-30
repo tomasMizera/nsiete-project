@@ -61,8 +61,6 @@ val_callback = PrAucCallback(val_generator, stage='val')
 # preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
 # model = Unet('resnet34', input_shape=(256, 384, 3),
 #              classes=4, activation='sigmoid')
-# model.compile(optimizer='adam', loss='binary_crossentropy',
-#               metrics=[dice_coef])
  
 def get_model():
     K.clear_session()
@@ -72,6 +70,9 @@ def get_model():
     return Model(inputs=base_model.input, outputs=y_pred)
 
 model = get_model()
+
+model.compile(optimizer='adam', loss='binary_crossentropy',
+              metrics=[dice_coef])
 
 model.fit_generator(
     train_generator, validation_data=val_generator, epochs=20, verbose=3, callbacks=[
