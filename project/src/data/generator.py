@@ -83,7 +83,7 @@ def build_rles(masks, reshape=None):
 class DataGenerator(keras.utils.Sequence):
     def __init__(self, images_list=None, folder_imgs='/labs/data/train_images',
                  batch_size=32, shuffle=True, augmentation=None,
-                 resized_height=256, resized_width=384, num_channels=3, img_2_ohe_vector=None):
+                 resized_height=256, resized_width=256, num_channels=3, img_2_ohe_vector=None):
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.augmentation = augmentation

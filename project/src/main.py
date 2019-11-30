@@ -52,7 +52,7 @@ val_callback = PrAucCallback(data_generator_val, stage='val')
 
 # Unet model
 preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
-model = Unet('resnet34', input_shape=(256, 384, 3),
+model = Unet('resnet34', input_shape=(256, 256, 3),
              classes=4, activation='sigmoid')
 
 # EfficientNet model 
