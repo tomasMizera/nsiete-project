@@ -1,3 +1,4 @@
+from albumentations import Compose, VerticalFlip, HorizontalFlip, Rotate, GridDistortion
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -31,32 +32,27 @@ mask_count_df.sort_values('has_mask', ascending=False, inplace=True)
 
 BATCH_SIZE = 32
 
-train_idx, val_idx = train_test_split(
-    mask_count_df.index, random_state=2019, test_size=0.15
-)
+train_imgs, val_imgs = train_test_split(train['Image'].values,
+                                        test_size=0.2,
+                                        stratify=train['Class'].map(lambda x: str(sorted(list(x)))),
+                                        random_state=2019)
 
-train_generator = DataGenerator(
-    train_idx,
-    df=mask_count_df,
-    target_df=train,
-    batch_size=BATCH_SIZE,
-    reshape=(256, 384),
-    n_channels=3,
-    n_classes=4
-)
+img_2_ohe_vector = {img: vec for img, vec in zip(
+    train['Image'], train.iloc[:, 2:].values)}
 
-val_generator = DataGenerator(
-    val_idx,
-    df=mask_count_df,
-    target_df=train,
-    batch_size=BATCH_SIZE,
-    reshape=(256, 384),
-    n_channels=3,
-    n_classes=4
-)
+albumentations_train = Compose([
+    VerticalFlip(), HorizontalFlip(), Rotate(limit=20), GridDistortion()
+], p=1)
 
-train_metric_callback = PrAucCallback(train_generator)
-val_callback = PrAucCallback(val_generator, stage='val')
+data_generator_train = DataGenenerator(
+    train_imgs, augmentation=albumentations_train, img_2_ohe_vector=img_2_ohe_vector)
+data_generator_train_eval = DataGenenerator(
+    train_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
+data_generator_val = DataGenenerator(
+    val_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
+
+train_metric_callback = PrAucCallback(data_generator_train_eval)
+val_callback = PrAucCallback(data_generator_val, stage='val')
 
 # Unet model
 preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
@@ -80,7 +76,7 @@ model.compile(optimizer=RAdam(warmup_proportion=0.1, min_lr=1e-5),
               loss='categorical_crossentropy', metrics=['accuracy'])
 
 model.fit_generator(
-    train_generator, validation_data=val_generator, epochs=20, verbose=3, callbacks=[
+    data_generator_train, validation_data=data_generator_val, epochs=20, verbose=3, callbacks=[
         keras.callbacks.TensorBoard(
             log_dir=os.path.join("../logs", str(datetime.now())),
             histogram_freq=1,

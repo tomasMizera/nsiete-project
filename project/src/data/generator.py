@@ -1,6 +1,9 @@
+from copy import deepcopy
 import numpy as np
 import cv2
 import keras
+import random
+import os
 
 def np_resize(img, input_shape):
     """
@@ -77,147 +80,60 @@ def build_rles(masks, reshape=None):
     return rles
 
 
-class DataGenerator(keras.utils.Sequence):
-    'Generates data for Keras'
-
-    def __init__(self, list_IDs, df, target_df=None, mode='fit',
-                 base_path='/labs/data/train_images',
-                 batch_size=32, dim=(1400, 2100), n_channels=3, reshape=None,
-                 n_classes=4, random_state=2019, shuffle=True):
-        self.dim = dim
+class DataGenenerator(keras.utils.Sequence):
+    def __init__(self, images_list=None, folder_imgs='/labs/data/train_images',
+                 batch_size=32, shuffle=True, augmentation=None,
+                 resized_height=260, resized_width=260, num_channels=3, img_2_ohe_vector=None):
         self.batch_size = batch_size
-        self.df = df
-        self.mode = mode
-        self.base_path = base_path
-        self.target_df = target_df
-        self.list_IDs = list_IDs
-        self.reshape = reshape
-        self.n_channels = n_channels
-        self.n_classes = n_classes
         self.shuffle = shuffle
-        self.random_state = random_state
-
-        self.on_epoch_end()
+        self.augmentation = augmentation
+        if images_list is None:
+            self.images_list = os.listdir(folder_imgs)
+        else:
+            self.images_list = deepcopy(images_list)
+        self.folder_imgs = folder_imgs
+        self.len = len(self.images_list) // self.batch_size
+        self.resized_height = resized_height
+        self.resized_width = resized_width
+        self.num_channels = num_channels
+        self.num_classes = 4
+        self.is_test = not 'train' in folder_imgs
+        self.img_2_ohe_vector = img_2_ohe_vector
+        if not shuffle and not self.is_test:
+            self.labels = [self.img_2_ohe_vector[img]
+                           for img in self.images_list[:self.len*self.batch_size]]
 
     def __len__(self):
-        'Denotes the number of batches per epoch'
-        return int(np.floor(len(self.list_IDs) / self.batch_size))
+        return self.len
 
-    def __getitem__(self, index):
-        'Generate one batch of data'
-        # Generate indexes of the batch
-        indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
+    def on_epoch_start(self):
+        if self.shuffle:
+            random.shuffle(self.images_list)
 
-        # Find list of IDs
-        list_IDs_batch = [self.list_IDs[k] for k in indexes]
+    def __getitem__(self, idx):
+        current_batch = self.images_list[idx *
+                                         self.batch_size: (idx + 1) * self.batch_size]
+        X = np.empty((self.batch_size, self.resized_height,
+                      self.resized_width, self.num_channels))
+        y = np.empty((self.batch_size, self.num_classes))
 
-        X = self.__generate_X(list_IDs_batch)
-
-        if self.mode == 'fit':
-            y = self.__generate_y(list_IDs_batch)
-            return X, y
-
-        elif self.mode == 'predict':
-            return X
-
-        else:
-            raise AttributeError(
-                'The mode parameter should be set to "fit" or "predict".')
-
-    def on_epoch_end(self):
-        'Updates indexes after each epoch'
-        self.indexes = np.arange(len(self.list_IDs))
-        if self.shuffle == True:
-            np.random.seed(self.random_state)
-            np.random.shuffle(self.indexes)
-
-    def __generate_X(self, list_IDs_batch):
-        'Generates data containing batch_size samples'
-        # Initialization
-        if self.reshape is None:
-            X = np.empty((self.batch_size, *self.dim, self.n_channels))
-        else:
-            X = np.empty((self.batch_size, *self.reshape, self.n_channels))
-
-        # Generate data
-        for i, ID in enumerate(list_IDs_batch):
-            im_name = self.df['ImageId'].iloc[ID]
-            img_path = f"{self.base_path}/{im_name}"
-
-            if self.n_channels == 3:
-                img = self.__load_rgb(img_path)
-            else:
-                img = self.__load_grayscale(img_path)
-
-            if self.reshape is not None:
-                img = np_resize(img, self.reshape)
-
-            if len(img.shape) == 2:
-                img = np.expand_dims(img, axis=-1)
-
-            # Store samples
-            X[i, ] = img
-
-        return X
-
-    def __generate_y(self, list_IDs_batch):
-        if self.reshape is None:
-            y = np.empty((self.batch_size, *self.dim,
-                          self.n_classes), dtype=int)
-        else:
-            y = np.empty((self.batch_size, *self.reshape,
-                          self.n_classes), dtype=int)
-
-        for i, ID in enumerate(list_IDs_batch):
-            im_name = self.df['ImageId'].iloc[ID]
-            image_df = self.target_df[self.target_df['ImageId'] == im_name]
-
-            rles = image_df['EncodedPixels'].values
-
-            if self.reshape is not None:
-                masks = build_masks(
-                    rles, input_shape=self.dim, reshape=self.reshape)
-            else:
-                masks = build_masks(rles, input_shape=self.dim)
-
-            y[i, ] = masks
-
-        return y
-
-    def __load_grayscale(self, img_path):
-        img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-        img = img.astype(np.float32) / 255.
-        img = np.expand_dims(img, axis=-1)
-
-        return img
-
-    def __load_rgb(self, img_path):
-        img = cv2.imread(img_path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = img.astype(np.float32) / 255.
-
-        return img
+        for i, image_name in enumerate(current_batch):
+            path = os.path.join(self.folder_imgs, image_name)
+            img = cv2.resize(cv2.imread(
+                path), (self.resized_height, self.resized_width)).astype(np.float32)
+            if not self.augmentation is None:
+                augmented = self.augmentation(image=img)
+                img = augmented['image']
+            X[i, :, :, :] = img/255.0
+            if not self.is_test:
+                y[i, :] = self.img_2_ohe_vector[image_name]
+        return X, y
 
     def get_labels(self):
-        if self.reshape is None:
-            y = np.empty((len(self.list_IDs), *self.dim,
-                          self.n_classes), dtype=int)
+        if self.shuffle:
+            images_current = self.images_list[:self.len*self.batch_size]
+            labels = [self.img_2_ohe_vector[img] for img in images_current]
         else:
-            y = np.empty((len(self.list_IDs), *self.reshape,
-                          self.n_classes), dtype=int)
+            labels = self.labels
+        return np.array(labels)
 
-        for i, ID in enumerate(self.list_IDs):
-            im_name = self.df['ImageId'].iloc[ID]
-            image_df = self.target_df[self.target_df['ImageId'] == im_name]
-
-            rles = image_df['EncodedPixels'].values
-
-            if self.reshape is not None:
-                masks = build_masks(
-                    rles, input_shape=self.dim, reshape=self.reshape)
-            else:
-                masks = build_masks(rles, input_shape=self.dim)
-
-            y[i, ] = masks
-
-        return y
