@@ -40,12 +40,9 @@ albumentations_train = Compose([
     VerticalFlip(), HorizontalFlip(), Rotate(limit=20), GridDistortion()
 ], p=1)
 
-data_generator_train = DataGenerator(
-    train_imgs, augmentation=albumentations_train, img_2_ohe_vector=img_2_ohe_vector)
-data_generator_train_eval = DataGenerator(
-    train_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
-data_generator_val = DataGenerator(
-    val_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
+data_generator_train = DataGenerator(train_imgs, augmentation=albumentations_train, img_2_ohe_vector=img_2_ohe_vector)
+data_generator_train_eval = DataGenerator(train_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
+data_generator_val = DataGenerator(val_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
 
 train_metric_callback = PrAucCallback(data_generator_train_eval)
 val_callback = PrAucCallback(data_generator_val, stage='val')
@@ -65,9 +62,6 @@ def get_model():
 
 model = get_model()
 
-for base_layer in model.layers[:-3]:
-    base_layer.trainable = False
-
 model.compile(optimizer=RAdam(warmup_proportion=0.1, min_lr=1e-5),
               loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -77,7 +71,7 @@ model.fit_generator(
             log_dir=os.path.join("../logs", str(datetime.now())),
             histogram_freq=1,
             profile_batch=0),
-        keras.callbacks.ModelCheckpoint(filepath='../models/model.ckpt', verbose=1),
+        keras.callbacks.ModelCheckpoint(filepath='../models/efficient_net.ckpt', verbose=1),
         train_metric_callback, val_callback
     ])
 
