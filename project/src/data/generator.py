@@ -197,3 +197,27 @@ class DataGenerator(keras.utils.Sequence):
         img = img.astype(np.float32) / 255.
 
         return img
+
+    def get_labels(self):
+        if self.reshape is None:
+            y = np.empty((self.batch_size, *self.dim,
+                          self.n_classes), dtype=int)
+        else:
+            y = np.empty((self.batch_size, *self.reshape,
+                          self.n_classes), dtype=int)
+
+        for i, ID in enumerate(self.list_IDs):
+            im_name = self.df['ImageId'].iloc[ID]
+            image_df = self.target_df[self.target_df['ImageId'] == im_name]
+
+            rles = image_df['EncodedPixels'].values
+
+            if self.reshape is not None:
+                masks = build_masks(
+                    rles, input_shape=self.dim, reshape=self.reshape)
+            else:
+                masks = build_masks(rles, input_shape=self.dim)
+
+            y[i, ] = masks
+
+        return y
