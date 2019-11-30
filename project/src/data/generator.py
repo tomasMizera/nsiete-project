@@ -200,10 +200,10 @@ class DataGenerator(keras.utils.Sequence):
 
     def get_labels(self):
         if self.reshape is None:
-            y = np.empty((self.batch_size, *self.dim,
+            y = np.empty((len(self.list_IDs), *self.dim,
                           self.n_classes), dtype=int)
         else:
-            y = np.empty((self.batch_size, *self.reshape,
+            y = np.empty((len(self.list_IDs), *self.reshape,
                           self.n_classes), dtype=int)
 
         for i, ID in enumerate(self.list_IDs):
