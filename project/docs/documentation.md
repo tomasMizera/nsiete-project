@@ -31,10 +31,14 @@ Dataset is further analysed in `data_analysis` jupyter notebook.
 **Overview**
 
 We used 2 neural network architectures with several backbones:
-1. Unet
-2. EfficientNet
+1. EfficientNet [4]
+2. Unet
 
 We use Unet for predicting masks based on input images (data analysis can be found in `analysis/data_analysis.ipynb`) with backbone `resnet` that extracts features and passes it to Unet.
+
+*EfficientNet*
+
+*Unet*
 
 ![Unet for mask prediction](media/unet.png)
 
@@ -97,3 +101,4 @@ However, after several discussions we sticked with kaggle competitions and attac
 
 [3] Weather Forecast by Generative Adversarial Networks, Adam Rafajdus, 2018, Thesis at Faculty of Informatics and Information Technologies STU.
 
+[4] EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks; *Mingxing Tan*, *Quoc Le*; Available at: [http://proceedings.mlr.press/v97/tan19a/tan19a.pdf](http://proceedings.mlr.press/v97/tan19a/tan19a.pdf)
