@@ -71,7 +71,7 @@ def get_model():
 
 model = get_model()
 
-model.compile(optimizer='adam', loss='binary_crossentropy',
+model.compile(optimizer='adam', loss='categorical_crossentropy',
               metrics=[dice_coef])
 
 model.fit_generator(
