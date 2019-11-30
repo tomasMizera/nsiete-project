@@ -80,7 +80,7 @@ def build_rles(masks, reshape=None):
     return rles
 
 
-class DataGenenerator(keras.utils.Sequence):
+class DataGenerator(keras.utils.Sequence):
     def __init__(self, images_list=None, folder_imgs='/labs/data/train_images',
                  batch_size=32, shuffle=True, augmentation=None,
                  resized_height=260, resized_width=260, num_channels=3, img_2_ohe_vector=None):

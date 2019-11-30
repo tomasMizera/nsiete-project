@@ -44,11 +44,11 @@ albumentations_train = Compose([
     VerticalFlip(), HorizontalFlip(), Rotate(limit=20), GridDistortion()
 ], p=1)
 
-data_generator_train = DataGenenerator(
+data_generator_train = DataGenerator(
     train_imgs, augmentation=albumentations_train, img_2_ohe_vector=img_2_ohe_vector)
-data_generator_train_eval = DataGenenerator(
+data_generator_train_eval = DataGenerator(
     train_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
-data_generator_val = DataGenenerator(
+data_generator_val = DataGenerator(
     val_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
 
 train_metric_callback = PrAucCallback(data_generator_train_eval)
