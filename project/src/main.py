@@ -1,4 +1,3 @@
-import multiprocessing
 from albumentations import Compose, VerticalFlip, HorizontalFlip, Rotate, GridDistortion
 import pandas as pd
 import numpy as np
@@ -17,8 +16,6 @@ from keras.models import Model
 from data.generator import DataGenerator
 from models.util import dice_coef
 from models.util import PrAucCallback
-
-num_cores = multiprocessing.cpu_count()
 
 train = pd.read_csv('../data/train.csv')
 train = train[~train['EncodedPixels'].isnull()]
@@ -50,8 +47,8 @@ data_generator_train_eval = DataGenerator(
 data_generator_val = DataGenerator(
     val_imgs, shuffle=False, img_2_ohe_vector=img_2_ohe_vector)
 
-train_metric_callback = PrAucCallback(data_generator_train_eval, num_workers=num_cores)
-val_callback = PrAucCallback(data_generator_val, stage='val', num_workers=num_cores)
+train_metric_callback = PrAucCallback(data_generator_train_eval)
+val_callback = PrAucCallback(data_generator_val, stage='val')
 
 # Unet model
 preprocess = get_preprocessing('resnet34')  # for resnet, img = (img-110.0)/1.0
