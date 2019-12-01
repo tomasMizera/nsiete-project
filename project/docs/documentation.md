@@ -43,14 +43,16 @@ In this section we describe used NN architecture and describe some challenges we
 ##### 3.1 Overview
 
 We used 2 neural network architectures with several backbones:
-1. EfficientNet [4]
-2. Unet
+1. Unet
+2. EfficientNet [4]
 
 We use Unet for predicting masks based on input images (data analysis can be found in `analysis/data_analysis.ipynb`) with backbone `resnet` that extracts features and passes it to Unet.
 
 ##### 3.2 Unet
 
 ![Unet for mask prediction](media/unet.png)
+
+
 
 ##### 3.3 Challenges & Solutions
 
