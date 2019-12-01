@@ -52,7 +52,20 @@ We use Unet for predicting masks based on input images (data analysis can be fou
 
 ![Unet for mask prediction](media/unet.png)
 
-Complete implemented model architecture is in first appendix as it is too long, it is an outcome from `model.summary()` method.
+Complete implemented model architecture is in first appendix as it is too long, it is an outcome from `model.summary()` method. However these are our params:  
+```
+Total params: 24,456,589
+Trainable params: 24,439,239
+Non-trainable params: 17,350
+```
+
+**Input**
+We had several phases but the one that worked the best takes as an input 4D array of (batch size * resolution_width * resolution_height * n_channels)
+
+**Output**
+Output is served as 4D array as well, but this time it looks like this: (batch size * resolution_width * resolution_height * n_cloud_classes). We get mask (it needs to be rounded) as an output for each class on each image.
+
+Presentation is showed in `present.ipynb` notebook.
 
 ##### 3.3 Challenges & Solutions
 
