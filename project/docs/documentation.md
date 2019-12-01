@@ -129,9 +129,15 @@ We can see that current run stagnates at 20-25 epochs and after that loss functi
 
 Hereby we show results for later trainings
 
-|No.| Acc | Epochs | Model | Backbone | Result |
-|---|---|---|---|---|---|
-|1|0.5|50|Unet|resnet34|success|
+|No.| Acc | Epochs | Model | Backbone | Result | Note |
+|---|---|---|---|---|---|---|
+|1|0.56|50|Unet|resnet34|success||
+|2|0.25|(6 - 16) * 10 runs|EfficientNetB2|-|meh|Plateaued quickly|
+|3|-|-|Unet|densenet169|fail|Not enough memory, killed our machine|
+|4|0.52|30|Unet|inceptionv3|success||
+|5|-|-|Unet|efficientNetB3|fail|Not enough tensors|
+|6|?|?|Unet|vgg16|?|?|
+
 
 #### 5. Conclusion
 
