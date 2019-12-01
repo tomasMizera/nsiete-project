@@ -81,7 +81,7 @@ class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
 
     def __init__(self, list_IDs, df, target_df=None, mode='fit',
-                 base_path='/labs/data/train_images',
+                 base_path='/home/tomasmizera/school/nsiete/nsiete-project/project/data/train_images/',
                  batch_size=32, dim=(1400, 2100), n_channels=3, reshape=None,
                  n_classes=4, random_state=2019, shuffle=True):
         self.dim = dim
@@ -95,6 +95,7 @@ class DataGenerator(keras.utils.Sequence):
         self.n_channels = n_channels
         self.n_classes = n_classes
         self.shuffle = shuffle
+        self.latest_images = []
         self.random_state = random_state
 
         self.on_epoch_end()
@@ -146,6 +147,7 @@ class DataGenerator(keras.utils.Sequence):
 
             if self.n_channels == 3:
                 img = self.__load_rgb(img_path)
+                self.latest_images.append(im_name)
             else:
                 img = self.__load_grayscale(img_path)
 
