@@ -129,9 +129,9 @@ We can see that current run stagnates at 20-25 epochs and after that loss functi
 
 Hereby we show results for later trainings
 
-|No.| Acc | Epochs | Model |
-|---|---|---|---|
-|1|0.5|50|Unet|
+|No.| Acc | Epochs | Model | Backbone | Result |
+|---|---|---|---|---|---|
+|1|0.5|50|Unet|resnet34|success|
 
 #### 5. Conclusion
 
