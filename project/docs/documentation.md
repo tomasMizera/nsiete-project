@@ -79,13 +79,17 @@ While working on project we came across several challenges:
 
 ##### 3.4 Submitted Files
 
-* `analysis/data_analysis.ipynb(.html)` - data analysis, also generated to html for simpler view 
+* `notebooks/data_analysis.ipynb(.html)` - data analysis, also generated to html for simpler view 
 
-* `main.py` - model definition and training
+* `src/main.py` - model definition and training
 
-* `data/generator.py` - code for Generator class handling data manipulation and streaming to model
+* `notebooks/present.ipynb(.html)` - showcase of model - creation and example prediction
 
-* `models/util.py`  - does dice coef
+* `src/data/generator.py` - code for Generator class handling data manipulation and streaming to model
+
+* `src/models/util.py`  - does dice coef
+
+* `logs/*` - log files
 
 #### 4. Training Routine
 Our training routine consists of following steps:
