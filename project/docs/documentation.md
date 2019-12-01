@@ -8,6 +8,16 @@
 
 GitHub repo: [https://github.com/tomasMizera/nsiete-project](https://github.com/tomasMizera/nsiete-project)
 
+**Content in this document**
+1. Motivation
+2. Dataset Description
+3. Technical Documentation of NN
+4. Training Routine
+5. Conclusion & Related Work
+6. Literature
+
+---
+
 #### 1. Motivation
 
 In this project we are segmenting cloud satellite pictures and recognizing different types of clouds in them. There are 4 major cloud types - Fish, Gravel, Sugar and Flower[2]. The goal of this project is to automatize process of cloud types detection since it can help scientists to build greater environmental models that helps to predict future climate changes.
@@ -26,9 +36,11 @@ Here is a visualized example from labeled train data:
 
 Dataset is further analysed in `data_analysis` jupyter notebook.
 
-#### 3. Technical documentation
+#### 3. Technical Documentation
 
-**Overview**
+In this section we describe used NN architecture and describe some challenges we were facing while working on project.
+
+##### 3.1 Overview
 
 We used 2 neural network architectures with several backbones:
 1. EfficientNet [4]
@@ -36,13 +48,11 @@ We used 2 neural network architectures with several backbones:
 
 We use Unet for predicting masks based on input images (data analysis can be found in `analysis/data_analysis.ipynb`) with backbone `resnet` that extracts features and passes it to Unet.
 
-*EfficientNet*
-
-*Unet*
+##### 3.2 Unet
 
 ![Unet for mask prediction](media/unet.png)
 
-**Challenges & solutions**
+##### 3.3 Challenges & Solutions
 
 While working on project we came across several challenges:
 
@@ -52,7 +62,7 @@ While working on project we came across several challenges:
 
 
 
-**Files** TODO rewrite
+##### 3.4 Submitted Files
 
 * `analysis/data_analysis.ipynb(.html)` - data analysis, also generated to html for simpler view 
 
@@ -62,14 +72,14 @@ While working on project we came across several challenges:
 
 * `models/util.py`  - does dice coef
 
-#### 4. Training routine
+#### 4. Training Routine
 Our training routine consists of following steps:
 * Split data to train and test samples and create respective generators
 * Download pretrained model backbone
 * Compose own model (either `Unet` or `EfficientNet`)
 * Fit model, provide train and validation generator, use callbacks to stop training if plateau
 
-#### 4.1 What did we do?
+##### 4.1 What did we do?
 * We started by implementing generator ([inspired by this notebook](https://www.kaggle.com/shahules/understanding-clounds-with-keras-unet)), which transforms image labels from `train.csv` to stream of images, produces input of dim (32, 256, 384, 3) - 32 is batch size
 * Afterwards we split data to train and test and implemented our first model, `Unet` with backbone `resnet34`
 * We have achieved around 55% accuracy (we used dice coefficient to measure that)
@@ -81,7 +91,7 @@ Our training routine consists of following steps:
 
 
 
-#### 4.2 First complete run
+##### 4.2 First Complete Run
 
 Our first big run was with Unet architecture and `resnet34` had 50 epochs and these were the results:
 
@@ -100,9 +110,19 @@ Our first big run was with Unet architecture and `resnet34` had 50 epochs and th
 
 We can see that current run stagnates at 20-25 epochs and after that loss function starts to arise.  It would make sense to stop training after this amount of epochs - this feature will be implemented in final submission.
 
-##### 4.3 Training results
+##### 4.3 Training Results
 
-#### 5. Related Work
+Hereby we show results for later trainings
+
+|No.| Acc | Epochs | Model |
+|---|---|---|---|
+|1|0.5|50|Unet|
+
+#### 5. Conclusion
+
+We were able to train NN model for a different cloud types partitioning. Outcoming model gives us mask for each cloud type on every picture we provide, final mask than needs to be rounded. While training data we found out that the Unet architecture gives us the best results out of all the models we tried.
+
+##### 5.1 Related Work
 
 Original idea comes from this [Kaggle competition](https://www.kaggle.com/c/understanding_cloud_organization/overview/description)[1] from *Max Planck Institute for Meteorology*. Competition's goal is to recognize different cloud types on provided test data. There are also included example `jupyter notebooks` with data loading and processing that can helped us get started. 
 
