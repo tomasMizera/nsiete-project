@@ -138,6 +138,15 @@ Hereby we show results for later trainings
 |5|-|-|Unet|efficientNetB3|fail|Not enough tensors|
 |6|?|?|Unet|vgg16|?|?|
 
+<img src="media/dice_coeff.png" alt="Dice coefficient metric on successful models"/>
+
+*Dice coefficient metric on successful models*
+
+
+
+<img src="media/epoch_loss.png" alt="Model losses"  />
+
+*Model losses*
 
 #### 5. Conclusion
 
