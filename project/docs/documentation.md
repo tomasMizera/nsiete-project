@@ -140,7 +140,7 @@ Hereby we show results for later trainings
 |3|-|-|Unet|densenet169|fail|Not enough memory, killed our machine|
 |4|0.52|30|Unet|inceptionv3|success||
 |5|-|-|Unet|efficientNetB3|fail|Not enough tensors|
-|6|?|?|Unet|vgg16|?|?|
+|6|0.47|30|Unet|vgg16|success||
 
 <img src="media/dice_coeff.png" alt="Dice coefficient metric on successful models"/>
 
